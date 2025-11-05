@@ -54,6 +54,11 @@ func NewRequest(bindDN string, searchReq ldap.SearchRequest, conn net.Conn) (*Re
 		l.WithError(err).WithField("objectClass", filterOC).Warning("invalid filter object class")
 	}
 
+	if strings.Contains(searchReq.Filter, "|") && strings.Contains(searchReq.Filter, "objectClass=") {
+		filterOC = ""
+		l.Debug("OR filter detected with objectClass, including all object types")
+	}
+
 	// Handle comma-separated attributes
 	normalizedAttributes := normalizeAttributes(searchReq.Attributes)
 	if len(normalizedAttributes) != len(searchReq.Attributes) {

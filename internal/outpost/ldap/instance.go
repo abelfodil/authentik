@@ -141,5 +141,23 @@ func (pi *ProviderInstance) GetNeededObjects(scope int, baseDN string, filterOC 
 		}
 	}
 
+	if filterOC == "" {
+		if (strings.EqualFold(baseDN, pi.BaseDN) || utils.HasSuffixNoCase(baseDN, pi.UserDN)) {
+			if baseDN != pi.UserDN && baseDN != pi.BaseDN ||
+				strings.EqualFold(baseDN, pi.BaseDN) && scope > 1 ||
+				strings.EqualFold(baseDN, pi.UserDN) && scope > 0 {
+				needUsers = true
+			}
+		}
+
+		if (strings.EqualFold(baseDN, pi.BaseDN) || utils.HasSuffixNoCase(baseDN, pi.GroupDN)) {
+			if baseDN != pi.GroupDN && baseDN != pi.BaseDN ||
+				strings.EqualFold(baseDN, pi.BaseDN) && scope > 1 ||
+				strings.EqualFold(baseDN, pi.GroupDN) && scope > 0 {
+				needGroups = true
+			}
+		}
+	}
+
 	return needUsers, needGroups
 }
